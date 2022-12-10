@@ -25,6 +25,11 @@ class GTKHeaderBar extends StatelessWidget implements PreferredSizeWidget {
         textDirection: TextDirection.ltr,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
+          onDoubleTap: () async {
+            await windowManager.isMaximized()
+                ? await windowManager.unmaximize()
+                : await windowManager.maximize();
+          },
           onPanStart: (_) => onPanStart(wm),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -58,6 +63,15 @@ class GTKHeaderBar extends StatelessWidget implements PreferredSizeWidget {
                         WindowCommandButton(
                           onPressed: wm.minimize,
                           icon: Icons.minimize_rounded,
+                        ),
+                        const SizedBox(width: 14),
+                        WindowCommandButton(
+                          onPressed: () async {
+                            await windowManager.isMaximized()
+                                ? await windowManager.unmaximize()
+                                : await windowManager.maximize();
+                          },
+                          icon: Icons.crop_square_sharp,
                         ),
                         const SizedBox(width: 14),
                         WindowCommandButton(
