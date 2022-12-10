@@ -17,6 +17,7 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
   final bool showMinimizeButton;
   final bool showCloseButton;
   final bool showWindowControlsButtons;
+  final Function? onWindowResize;
   const GTKHeaderBar({
     super.key,
     this.leading,
@@ -32,6 +33,7 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
     this.showMinimizeButton = true,
     this.showCloseButton = true,
     this.showWindowControlsButtons = true,
+    this.onWindowResize,
   });
 
   @override
@@ -83,6 +85,12 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
     setState(() {
       isMaximized = false;
     });
+  }
+  @override
+  Future<void> onWindowResize() async {
+    if (widget.onWindowResize != null) {
+      widget.onWindowResize!(await windowManager.getSize());
+    }
   }
 
   @override
