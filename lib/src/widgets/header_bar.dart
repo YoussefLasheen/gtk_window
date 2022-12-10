@@ -7,6 +7,8 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
   final List<Widget>? leading;
   final Widget? middle;
   final List<Widget>? trailing;
+  final PreferredSizeWidget? bottom;
+  final double height;
   final double middleSpacing;
   final EdgeInsetsGeometry padding;
   final bool showLeading;
@@ -19,6 +21,8 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
     this.leading,
     this.middle,
     this.trailing,
+    this.bottom,
+    this.height = 44,
     this.middleSpacing = 10,
     this.padding = const EdgeInsets.symmetric(horizontal: 10),
     this.showLeading = true,
@@ -32,6 +36,8 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
     this.leading,
     this.middle,
     this.trailing,
+    this.bottom,
+    this.height = 44,
     this.middleSpacing = 10,
     this.padding = const EdgeInsets.symmetric(horizontal: 10),
     this.showLeading = true,
@@ -42,7 +48,8 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(44);
+  Size get preferredSize =>
+      Size.fromHeight(height + (bottom?.preferredSize.height ?? 0));
 
   @override
   State<GTKHeaderBar> createState() => _GTKHeaderBarState();
@@ -167,39 +174,51 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
       );
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isFocused
-            ? isDark
-                ? GTKColors.darkFocusedBackground
-                : GTKColors.lightFocusedBackground
-            : isDark
-                ? GTKColors.darkUnfocusedBackground
-                : GTKColors.lightUnfocusedBackground,
-        border: Border(
-          bottom: BorderSide(
-            color: isDark ? GTKColors.darkBorder : GTKColors.lightBorder,
-            width: 1,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: widget.height),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isFocused
+                    ? isDark
+                        ? GTKColors.darkFocusedBackground
+                        : GTKColors.lightFocusedBackground
+                    : isDark
+                        ? GTKColors.darkUnfocusedBackground
+                        : GTKColors.lightUnfocusedBackground,
+                border: Border(
+                  bottom: BorderSide(
+                    color:
+                        isDark ? GTKColors.darkBorder : GTKColors.lightBorder,
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onDoubleTap: () async {
+                  isMaximized
+                      ? await windowManager.unmaximize()
+                      : await windowManager.maximize();
+                },
+                onPanStart: (_) => onPanStart(),
+                child: Padding(
+                  padding: widget.padding,
+                  child: NavigationToolbar(
+                      middleSpacing: widget.middleSpacing,
+                      leading: leading,
+                      middle: widget.middle,
+                      trailing: trailing),
+                ),
+              ),
+            ),
           ),
         ),
-      ),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onDoubleTap: () async {
-          isMaximized
-              ? await windowManager.unmaximize()
-              : await windowManager.maximize();
-        },
-        onPanStart: (_) => onPanStart(),
-        child: Padding(
-          padding: widget.padding,
-          child: NavigationToolbar(
-              middleSpacing: widget.middleSpacing,
-              leading: leading,
-              middle: widget.middle,
-              trailing: trailing),
-        ),
-      ),
+        widget.bottom ?? const SizedBox.shrink(),
+      ],
     );
   }
 
