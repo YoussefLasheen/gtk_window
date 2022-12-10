@@ -16,6 +16,7 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
   final bool showMaximizeButton;
   final bool showMinimizeButton;
   final bool showCloseButton;
+  final bool showWindowControlsButtons;
   const GTKHeaderBar({
     super.key,
     this.leading,
@@ -30,21 +31,7 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
     this.showMaximizeButton = true,
     this.showMinimizeButton = true,
     this.showCloseButton = true,
-  });
-  const GTKHeaderBar.noWindowControl({
-    super.key,
-    this.leading,
-    this.middle,
-    this.trailing,
-    this.bottom,
-    this.height = 44,
-    this.middleSpacing = 10,
-    this.padding = const EdgeInsets.symmetric(horizontal: 10),
-    this.showLeading = true,
-    this.showTrailing = true,
-    this.showMaximizeButton = false,
-    this.showMinimizeButton = false,
-    this.showCloseButton = false,
+    this.showWindowControlsButtons = true,
   });
 
   @override
@@ -128,9 +115,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
     );
 
     Widget? trailing;
-    if (!widget.showCloseButton &&
-        !widget.showMaximizeButton &&
-        !widget.showMinimizeButton) {
+    if (!widget.showWindowControlsButtons) {
       trailing = Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
