@@ -81,7 +81,7 @@ gtk_widget_show(GTK_WIDGET(view));
 import 'package:gtk_window/gtk_window.dart';
 Scaffold(
     appBar: GTKHeaderBar
-        title: Text('example title'),
+        middle: Text('example title'),
       ),
 )
 ```

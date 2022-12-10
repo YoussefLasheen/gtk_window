@@ -4,8 +4,15 @@ import 'package:gtk_window/src/widgets/window_command_button.dart';
 import 'package:window_manager/window_manager.dart';
 
 class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
-  final Widget title;
-  const GTKHeaderBar({super.key, required this.title});
+  final List<Widget>? leading;
+  final Widget? middle;
+  final List<Widget>? trailing;
+  const GTKHeaderBar({
+    super.key,
+    this.leading,
+    this.middle,
+    this.trailing,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(44);
@@ -60,6 +67,62 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
+    Widget? leading;
+    leading = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (ModalRoute.of(context)!.canPop)
+          Positioned(
+            left: 0,
+            child: InkWell(
+              hoverColor: Colors.white12,
+              borderRadius: BorderRadius.circular(7),
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.arrow_back_rounded,
+                  size: 17,
+                ),
+              ),
+              onTap: () => Navigator.pop(context),
+            ),
+          ),
+        if (widget.leading != null)
+          for (var item in widget.leading!) item,
+      ],
+    );
+
+    Widget? trailing;
+    trailing = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.leading != null)
+          for (var item in widget.trailing!) item,
+        WindowCommandButton(
+          onPressed: windowManager.minimize,
+          icon: Icons.minimize_rounded,
+          isFocused: isFocused,
+        ),
+        const SizedBox(width: 14),
+        WindowCommandButton(
+          onPressed: () async {
+            isMaximized
+                ? await windowManager.unmaximize()
+                : await windowManager.maximize();
+          },
+          icon: Icons.crop_square_sharp,
+          isFocused: isFocused,
+        ),
+        const SizedBox(width: 14),
+        WindowCommandButton(
+          onPressed: windowManager.close,
+          icon: Icons.close_rounded,
+          isFocused: isFocused,
+        ),
+      ],
+    );
     return Container(
       decoration: BoxDecoration(
         color: isFocused
@@ -76,73 +139,18 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
           ),
         ),
       ),
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onDoubleTap: () async {
-            isMaximized
-                ? await windowManager.unmaximize()
-                : await windowManager.maximize();
-          },
-          onPanStart: (_) => onPanStart(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: Stack(
-              fit: StackFit.expand,
-              alignment: Alignment.center,
-              children: [
-                if (ModalRoute.of(context)!.canPop)
-                  Positioned(
-                    left: 0,
-                    child: InkWell(
-                      hoverColor: Colors.white12,
-                      borderRadius: BorderRadius.circular(7),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.arrow_back_rounded,
-                          size: 17,
-                        ),
-                      ),
-                      onTap: () => Navigator.pop(context),
-                    ),
-                  ),
-                Center(child: widget.title),
-                Positioned(
-                  right: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      children: [
-                        WindowCommandButton(
-                          onPressed: windowManager.minimize,
-                          icon: Icons.minimize_rounded,
-                          isFocused: isFocused,
-                        ),
-                        const SizedBox(width: 14),
-                        WindowCommandButton(
-                          onPressed: () async {
-                            isMaximized
-                                ? await windowManager.unmaximize()
-                                : await windowManager.maximize();
-                          },
-                          icon: Icons.crop_square_sharp,
-                          isFocused: isFocused,
-                        ),
-                        const SizedBox(width: 14),
-                        WindowCommandButton(
-                          onPressed: windowManager.close,
-                          icon: Icons.close_rounded,
-                          isFocused: isFocused,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onDoubleTap: () async {
+          isMaximized
+              ? await windowManager.unmaximize()
+              : await windowManager.maximize();
+        },
+        onPanStart: (_) => onPanStart(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: NavigationToolbar(
+              leading: leading, middle: widget.middle, trailing: trailing),
         ),
       ),
     );
