@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:gtk_window/src/colors.dart';
 
 class WindowCommandButton extends StatelessWidget {
+  final bool isFocused;
   const WindowCommandButton({
     Key? key,
     required this.onPressed,
     required this.icon,
+    required this.isFocused,
   }) : super(key: key);
 
   final Function onPressed;
@@ -17,9 +19,13 @@ class WindowCommandButton extends StatelessWidget {
     return SizedBox.fromSize(
       size: const Size.square(24),
       child: Material(
-        color: isDark
-            ? GTKColors.darkWindowCommandButtonBackground
-            : GTKColors.lightWindowCommandButtonBackground,
+        color: isFocused
+            ? isDark
+                ? GTKColors.darkFocusedWindowCommandButtonBackground
+                : GTKColors.lightFocusedWindowCommandButtonBackground
+            : isDark
+                ? GTKColors.darkUnfocusedWindowCommandButtonBackground
+                : GTKColors.lightUnfocusedWindowCommandButtonBackground,
         shape: const CircleBorder(),
         child: IconButton(
           color: isDark
