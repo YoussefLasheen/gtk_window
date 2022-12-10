@@ -7,11 +7,38 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
   final List<Widget>? leading;
   final Widget? middle;
   final List<Widget>? trailing;
+  final double middleSpacing;
+  final EdgeInsetsGeometry padding;
+  final bool showLeading;
+  final bool showTrailing;
+  final bool showMaximizeButton;
+  final bool showMinimizeButton;
+  final bool showCloseButton;
   const GTKHeaderBar({
     super.key,
     this.leading,
     this.middle,
     this.trailing,
+    this.middleSpacing = 10,
+    this.padding = const EdgeInsets.symmetric(horizontal: 10),
+    this.showLeading = true,
+    this.showTrailing = true,
+    this.showMaximizeButton = true,
+    this.showMinimizeButton = true,
+    this.showCloseButton = true,
+  });
+  const GTKHeaderBar.noWindowControl({
+    super.key,
+    this.leading,
+    this.middle,
+    this.trailing,
+    this.middleSpacing = 10,
+    this.padding = const EdgeInsets.symmetric(horizontal: 10),
+    this.showLeading = true,
+    this.showTrailing = true,
+    this.showMaximizeButton = false,
+    this.showMinimizeButton = false,
+    this.showCloseButton = false,
   });
 
   @override
@@ -94,35 +121,52 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
     );
 
     Widget? trailing;
-    trailing = Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (widget.leading != null)
-          for (var item in widget.trailing!) item,
-        WindowCommandButton(
-          onPressed: windowManager.minimize,
-          icon: Icons.minimize_rounded,
-          isFocused: isFocused,
-        ),
-        const SizedBox(width: 14),
-        WindowCommandButton(
-          onPressed: () async {
-            isMaximized
-                ? await windowManager.unmaximize()
-                : await windowManager.maximize();
-          },
-          icon: Icons.crop_square_sharp,
-          isFocused: isFocused,
-        ),
-        const SizedBox(width: 14),
-        WindowCommandButton(
-          onPressed: windowManager.close,
-          icon: Icons.close_rounded,
-          isFocused: isFocused,
-        ),
-      ],
-    );
+    if (!widget.showCloseButton &&
+        !widget.showMaximizeButton &&
+        !widget.showMinimizeButton) {
+      trailing = Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (widget.leading != null)
+            for (var item in widget.trailing!) item,
+        ],
+      );
+    } else {
+      trailing = Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (widget.leading != null)
+            for (var item in widget.trailing!) item,
+          if (widget.showMinimizeButton)
+            WindowCommandButton(
+              onPressed: windowManager.minimize,
+              icon: Icons.minimize_rounded,
+              isFocused: isFocused,
+            ),
+          const SizedBox(width: 14),
+          if (widget.showMaximizeButton)
+            WindowCommandButton(
+              onPressed: () async {
+                isMaximized
+                    ? await windowManager.unmaximize()
+                    : await windowManager.maximize();
+              },
+              icon: Icons.crop_square_sharp,
+              isFocused: isFocused,
+            ),
+          const SizedBox(width: 14),
+          if (widget.showCloseButton)
+            WindowCommandButton(
+              onPressed: windowManager.close,
+              icon: Icons.close_rounded,
+              isFocused: isFocused,
+            ),
+        ],
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: isFocused
@@ -148,9 +192,12 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
         },
         onPanStart: (_) => onPanStart(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: widget.padding,
           child: NavigationToolbar(
-              leading: leading, middle: widget.middle, trailing: trailing),
+              middleSpacing: widget.middleSpacing,
+              leading: leading,
+              middle: widget.middle,
+              trailing: trailing),
         ),
       ),
     );
