@@ -22,7 +22,7 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
-  bool isFocused = false;
+  bool isFocused = true;
   bool isMaximized = false;
   @override
   void initState() {
