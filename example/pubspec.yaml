@@ -1,0 +1,18 @@
+name: gtk_window_example
+description: Example for the gtk_window package.
+publish_to: 'none'
+
+environment:
+  sdk: '>=2.18.5 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  gtk_window:
+    path: ../
+
+dev_dependencies:
+  flutter_lints: ^1.0.0
+
+flutter:
+  uses-material-design: true

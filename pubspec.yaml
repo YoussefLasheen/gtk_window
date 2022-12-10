@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  handy_window: ^0.1.9
+  window_manager: ^0.2.8
 
 dev_dependencies:
   flutter_test:
