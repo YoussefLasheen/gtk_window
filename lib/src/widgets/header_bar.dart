@@ -86,6 +86,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
       isMaximized = false;
     });
   }
+
   @override
   Future<void> onWindowResize() async {
     if (widget.onWindowResize != null) {
@@ -167,51 +168,54 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
       );
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: widget.height),
-            child: Container(
-              decoration: BoxDecoration(
-                color: isFocused
-                    ? isDark
-                        ? GTKColors.darkFocusedBackground
-                        : GTKColors.lightFocusedBackground
-                    : isDark
-                        ? GTKColors.darkUnfocusedBackground
-                        : GTKColors.lightUnfocusedBackground,
-                border: Border(
-                  bottom: BorderSide(
-                    color:
-                        isDark ? GTKColors.darkBorder : GTKColors.lightBorder,
-                    width: 1,
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: widget.height),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isFocused
+                      ? isDark
+                          ? GTKColors.darkFocusedBackground
+                          : GTKColors.lightFocusedBackground
+                      : isDark
+                          ? GTKColors.darkUnfocusedBackground
+                          : GTKColors.lightUnfocusedBackground,
+                  border: Border(
+                    bottom: BorderSide(
+                      color:
+                          isDark ? GTKColors.darkBorder : GTKColors.lightBorder,
+                      width: 1,
+                    ),
                   ),
                 ),
-              ),
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onDoubleTap: () async {
-                  isMaximized
-                      ? await windowManager.unmaximize()
-                      : await windowManager.maximize();
-                },
-                onPanStart: (_) => onPanStart(),
-                child: Padding(
-                  padding: widget.padding,
-                  child: NavigationToolbar(
-                      middleSpacing: widget.middleSpacing,
-                      leading: leading,
-                      middle: widget.middle,
-                      trailing: trailing),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onDoubleTap: () async {
+                    isMaximized
+                        ? await windowManager.unmaximize()
+                        : await windowManager.maximize();
+                  },
+                  onPanStart: (_) => onPanStart(),
+                  child: Padding(
+                    padding: widget.padding,
+                    child: NavigationToolbar(
+                        middleSpacing: widget.middleSpacing,
+                        leading: leading,
+                        middle: widget.middle,
+                        trailing: trailing),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        widget.bottom ?? const SizedBox.shrink(),
-      ],
+          widget.bottom ?? const SizedBox.shrink(),
+        ],
+      ),
     );
   }
 
