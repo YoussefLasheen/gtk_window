@@ -102,22 +102,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (ModalRoute.of(context)!.canPop)
-          Positioned(
-            left: 0,
-            child: InkWell(
-              hoverColor: Colors.white12,
-              borderRadius: BorderRadius.circular(7),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.arrow_back_rounded,
-                  size: 17,
-                ),
-              ),
-              onTap: () => Navigator.pop(context),
-            ),
-          ),
+        if (ModalRoute.of(context)!.canPop) const BackButton(),
         if (widget.leading != null)
           for (var item in widget.leading!) item,
       ],
