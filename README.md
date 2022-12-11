@@ -1,37 +1,33 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
+ # GTK Window
 A package that add some missing gtk4 windowing features to flutter. Works for linux but it can also work for MacOS and Windows.   
-Before:   
-![](images/screen_before.png)
-After:   
-![](images/screen_after.png)
+
+[![pub package](https://img.shields.io/pub/v/gtk_window.svg)](https://pub.dev/packages/gtk_window)  
+  
+
+Before            |  After
+:-------------------------:|:-------------------------:
+![](https://raw.githubusercontent.com/YoussefLasheen/gtk_window/main/images/before_1.png)  |  ![](https://raw.githubusercontent.com/YoussefLasheen/gtk_window/main/images/after_1.png)
+![](https://raw.githubusercontent.com/YoussefLasheen/gtk_window/main/images/before_2.png)  |  ![](https://raw.githubusercontent.com/YoussefLasheen/gtk_window/main/images/after_2.png)
+
+
 
 ## Features
 
- - HeaderBar
-    - Window Command buttons like Maximize, Minimize, and Close   
-    ![](images/control_buttons.png)
-    - Back button when there's a view that can be poped
-    ![](images/back_button.png)
-    - Light and Dark mode
+- Window Command buttons like Maximize, Minimize, and Close   
+- Back button when there's a view that can be poped
+- Custom leading and trailing widgets
+- PreferedSize bottom widgets
+- Light and Dark mode
+- Headerbar reacts to the window focus state
+- On window resize call allows you to add custom logic in reaction to the window resize
+- Curved corners (thanks to [handy_window](https://pub.dev/packages/handy_window))
 
 ## Getting started
 
-To get started on linux:
-Edit the linux/my_application.cc file as the following
+### Linux:   
+We first need to remove the native title_bar.
 
-We first need to remove the native title_bar. So just comment out the code below
+Edit the linux/my_application.cc file as the following and just comment out the code below
 ```cc
 //gboolean use_header_bar = TRUE;
 // #ifdef GDK_WINDOWING_X11
@@ -75,8 +71,9 @@ gtk_widget_show(GTK_WIDGET(window));
 gtk_widget_show(GTK_WIDGET(view));
 }
 ```
-## Usage
-
+## Usage of GTKHeaderBar
+It's a drop in replacment for the AppBar widget. So It allows you to just replace the Material with it for desktop clients.
+### Basic title
 ```dart
 import 'package:gtk_window/gtk_window.dart';
 Scaffold(
@@ -85,9 +82,45 @@ Scaffold(
       ),
 )
 ```
+### Basic title with overflow hamburger menu:
+```dart
+import 'package:gtk_window/gtk_window.dart';
+Scaffold(
+    appBar: GTKHeaderBar
+        middle: Text('example title'),
+        trailing: ElevatedButton(
+            child: Icon(child: Icons.menu,)
+        ),
+      ),
+)
+```
+### Basic title with search bottom:
+```dart
+import 'package:gtk_window/gtk_window.dart';
+Scaffold(
+    appBar: GTKHeaderBar
+        middle: Text('Settings'),
+        trailing: GTKButton(
+            child: Icon(child: Icons.menu,)
+        ),
+        bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: TextField()
+        )
+      ),
+)
+```
+### Complicated split view with bottom search_bar:
+
+Check out this [fork](https://github.com/YoussefLasheen/settings/tree/2fa2cc63f19e4a15b57be24974276b7962b97992)
+
+![](https://raw.githubusercontent.com/YoussefLasheen/gtk_window/main/images/example_settings.png)
+
 
 ## Current limitations
  - The OS doesn't treat the appbar natively so it can't be hidden in the case of using a window manager.
+ - Currenlty right-clicking on the header does nothing
+ - You need to edit native code to hide the native appbar as flutter doesn't supprt it yet see [#31373](https://github.com/flutter/flutter/issues/31373)
 ## Why not just use the native headerbar provided by flutter?
 Due to the wide array of supported platforms that the flutter team mantain, they have to bundle features together to work on as much platforms as they can to simplify development. So they made the GTK appbar version to be just like MacOS's and Windows' as they just hover over the content without having so muchcontrol over them. In GTK the appbar's can have lots of widgets contained in them, which without this package you would have no control over them.
 
