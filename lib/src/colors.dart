@@ -9,10 +9,14 @@ class GTKColors {
   static const Color lightBorder = Color(0xFFE0E0E0);
   static const Color darkBorder = Color(0x73000000);
 
-  static const Color lightFocusedWindowCommandButtonBackground = Color(0xFFd9d9d9);
-  static const Color darkFocusedWindowCommandButtonBackground = Color(0x1AFFFFFF);
-  static const Color lightUnfocusedWindowCommandButtonBackground = Color(0xFFf0f0f0);
-  static const Color darkUnfocusedWindowCommandButtonBackground = Color(0xFF2e2e2e);
+  static const Color lightFocusedWindowCommandButtonBackground =
+      Color(0xFFd9d9d9);
+  static const Color darkFocusedWindowCommandButtonBackground =
+      Color(0x1AFFFFFF);
+  static const Color lightUnfocusedWindowCommandButtonBackground =
+      Color(0xFFf0f0f0);
+  static const Color darkUnfocusedWindowCommandButtonBackground =
+      Color(0xFF2e2e2e);
 
   static const Color lightWindowCommandButtonIcon = Color(0xFF000000);
   static const Color darkWindowCommandButtonIcon = Color(0xFFFFFFFF);
