@@ -14,12 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light().copyWith(
-        scaffoldBackgroundColor: const Color(0xFFfafafa)
-      ),
-      darkTheme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF242424)
-      ),
+      theme: ThemeData.light()
+          .copyWith(scaffoldBackgroundColor: const Color(0xFFfafafa)),
+      darkTheme: ThemeData.dark()
+          .copyWith(scaffoldBackgroundColor: const Color(0xFF242424)),
       home: const MyHomePage(title: 'GTK window Demo'),
     );
   }
@@ -97,6 +95,22 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Scaffold(
+                      appBar: GTKHeaderBar(),
+                      body: Center(
+                        child: Text("Second page"),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Go to Second Page'),
             ),
           ],
         ),
