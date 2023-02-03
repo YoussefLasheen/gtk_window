@@ -23,34 +23,9 @@ Before            |  After
 - Curved corners (thanks to [handy_window](https://pub.dev/packages/handy_window))
 
 ## Getting started
-
 ### Linux:   
-We first need to remove the native title_bar.
 
-Edit the linux/my_application.cc file as the following and just comment out the code below
-```cc
-//gboolean use_header_bar = TRUE;
-// #ifdef GDK_WINDOWING_X11
-//   GdkScreen* screen = gtk_window_get_screen(window);
-//   if (GDK_IS_X11_SCREEN(screen)) {
-//     const gchar* wm_name = gdk_x11_screen_get_window_manager_name(screen);
-//     if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
-//       use_header_bar = FALSE;
-//     }
-//   }
-// #endif
-//   if (use_header_bar) {
-//     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
-//     gtk_widget_show(GTK_WIDGET(header_bar));
-//     gtk_header_bar_set_title(header_bar, "example");
-//     gtk_header_bar_set_show_close_button(header_bar, TRUE);
-//     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
-//   } else {
-//     gtk_window_set_title(window, "example");
-//   }
-```
-
-Then move the two lines to the end of the my_application_activate class
+To get rounded corners move the two lines to the end of the my_application_activate class
 from:
 ```cc
 gtk_window_set_default_size(window, 1280, 720);
@@ -77,7 +52,7 @@ It's a drop in replacment for the AppBar widget. So It allows you to just replac
 ```dart
 import 'package:gtk_window/gtk_window.dart';
 Scaffold(
-    appBar: GTKHeaderBar
+    appBar: GTKHeaderBar(
         middle: Text('example title'),
       ),
 )
@@ -86,7 +61,7 @@ Scaffold(
 ```dart
 import 'package:gtk_window/gtk_window.dart';
 Scaffold(
-    appBar: GTKHeaderBar
+    appBar: GTKHeaderBar(
         middle: Text('example title'),
         trailing: ElevatedButton(
             child: Icon(child: Icons.menu,)
@@ -98,7 +73,7 @@ Scaffold(
 ```dart
 import 'package:gtk_window/gtk_window.dart';
 Scaffold(
-    appBar: GTKHeaderBar
+    appBar: GTKHeaderBar(
         middle: Text('Settings'),
         trailing: GTKButton(
             child: Icon(child: Icons.menu,)
@@ -119,8 +94,7 @@ Check out this [fork](https://github.com/YoussefLasheen/settings/tree/2fa2cc63f1
 
 ## Current limitations
  - The OS doesn't treat the appbar natively so it can't be hidden in the case of using a window manager.
- - Currenlty right-clicking on the header does nothing
- - You need to edit native code to hide the native appbar as flutter doesn't supprt it yet see [#31373](https://github.com/flutter/flutter/issues/31373)
+ - Currenlty right-clicking on the header does nothing.
 ## Why not just use the native headerbar provided by flutter?
 Due to the wide array of supported platforms that the flutter team mantain, they have to bundle features together to work on as much platforms as they can to simplify development. So they made the GTK appbar version to be just like MacOS's and Windows' as they just hover over the content without having so muchcontrol over them. In GTK the appbar's can have lots of widgets contained in them, which without this package you would have no control over them.
 

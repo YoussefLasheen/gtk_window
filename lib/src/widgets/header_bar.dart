@@ -49,6 +49,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
   bool isMaximized = false;
   @override
   void initState() {
+    windowManager.setTitleBarStyle(TitleBarStyle.hidden);
     windowManager.addListener(this);
     super.initState();
   }
