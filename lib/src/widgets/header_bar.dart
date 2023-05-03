@@ -145,11 +145,11 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
                                   widget.decorationLayout!.leftItems),
                             if (widget.decorationLayout != null &&
                                 widget.decorationLayout!.leftItems.isNotEmpty)
-                              const SizedBox(width: 14),
+                              const SizedBox(width: 11),
                             if (ModalRoute.of(context)!.canPop)
                               const BackButton(),
                             if (ModalRoute.of(context)!.canPop)
-                              const SizedBox(width: 14),
+                              const SizedBox(width: 11),
                             ...?widget.leading,
                           ],
                         ),
@@ -160,7 +160,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
                           children: [
                             ...?widget.trailing,
                             if (widget.trailing?.isNotEmpty ?? false)
-                              const SizedBox(width: 14),
+                              const SizedBox(width: 11),
                             if (widget.decorationLayout != null)
                               ..._generateWindowDecorations(
                                   widget.decorationLayout!.rightItems)
@@ -186,7 +186,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
                   decoration: items[index ~/ 2],
                   isFocused: isFocused,
                   isMaximized: isMaximized)
-              : const SizedBox(width: 14));
+              : const SizedBox(width: 13));
     } else {
       return [];
     }
