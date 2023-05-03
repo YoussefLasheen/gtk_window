@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gtk_window/src/colors.dart';
-import 'package:gtk_window/src/widgets/window_command_button.dart';
+import 'package:gtk_window/src/widgets/standard_window_command_button.dart';
+import 'package:gtk_window/src/window_decoration.dart';
+import 'package:gtk_window/src/window_decoration_layout.dart';
 import 'package:window_manager/window_manager.dart';
 
 class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
@@ -13,10 +15,7 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
   final EdgeInsetsGeometry padding;
   final bool showLeading;
   final bool showTrailing;
-  final bool showMaximizeButton;
-  final bool showMinimizeButton;
-  final bool showCloseButton;
-  final bool showWindowControlsButtons;
+  final WindowDecorationLayout? decorationLayout;
   final Function? onWindowResize;
   const GTKHeaderBar({
     super.key,
@@ -29,10 +28,11 @@ class GTKHeaderBar extends StatefulWidget implements PreferredSizeWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 10),
     this.showLeading = true,
     this.showTrailing = true,
-    this.showMaximizeButton = true,
-    this.showMinimizeButton = true,
-    this.showCloseButton = true,
-    this.showWindowControlsButtons = true,
+    this.decorationLayout = const WindowDecorationLayout([], [
+      WindowDecoration.minimize,
+      WindowDecoration.maximize,
+      WindowDecoration.close
+    ]),
     this.onWindowResize,
   });
 
@@ -98,61 +98,6 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
-    Widget? leading;
-    leading = Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (ModalRoute.of(context)!.canPop) const BackButton(),
-        if (widget.leading != null)
-          for (var item in widget.leading!) item,
-      ],
-    );
-
-    Widget? trailing;
-    if (!widget.showWindowControlsButtons) {
-      trailing = Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (widget.leading != null)
-            for (var item in widget.trailing!) item,
-        ],
-      );
-    } else {
-      trailing = Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (widget.leading != null)
-            for (var item in widget.trailing!) item,
-          if (widget.showMinimizeButton)
-            WindowCommandButton(
-              onPressed: windowManager.minimize,
-              icon: Icons.minimize_rounded,
-              isFocused: isFocused,
-            ),
-          const SizedBox(width: 14),
-          if (widget.showMaximizeButton)
-            WindowCommandButton(
-              onPressed: () async {
-                isMaximized
-                    ? await windowManager.unmaximize()
-                    : await windowManager.maximize();
-              },
-              icon: Icons.crop_square_sharp,
-              isFocused: isFocused,
-            ),
-          const SizedBox(width: 14),
-          if (widget.showCloseButton)
-            WindowCommandButton(
-              onPressed: windowManager.close,
-              icon: Icons.close_rounded,
-              isFocused: isFocused,
-            ),
-        ],
-      );
-    }
 
     return Material(
       color: Colors.transparent,
@@ -191,9 +136,36 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
                     padding: widget.padding,
                     child: NavigationToolbar(
                         middleSpacing: widget.middleSpacing,
-                        leading: leading,
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (widget.decorationLayout != null)
+                              ..._generateWindowDecorations(
+                                  widget.decorationLayout!.leftItems),
+                            if (widget.decorationLayout != null &&
+                                widget.decorationLayout!.leftItems.isNotEmpty)
+                              const SizedBox(width: 11),
+                            if (ModalRoute.of(context)!.canPop)
+                              const BackButton(),
+                            if (ModalRoute.of(context)!.canPop)
+                              const SizedBox(width: 11),
+                            ...?widget.leading,
+                          ],
+                        ),
                         middle: widget.middle,
-                        trailing: trailing),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ...?widget.trailing,
+                            if (widget.trailing?.isNotEmpty ?? false)
+                              const SizedBox(width: 11),
+                            if (widget.decorationLayout != null)
+                              ..._generateWindowDecorations(
+                                  widget.decorationLayout!.rightItems)
+                          ],
+                        )),
                   ),
                 ),
               ),
@@ -203,6 +175,21 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
         ],
       ),
     );
+  }
+
+  List<Widget> _generateWindowDecorations(List<WindowDecoration> items) {
+    if (items.isNotEmpty) {
+      return List.generate(
+          items.length * 2 - 1,
+          (index) => (index % 2 == 0)
+              ? StandardWindowCommandButton(
+                  decoration: items[index ~/ 2],
+                  isFocused: isFocused,
+                  isMaximized: isMaximized)
+              : const SizedBox(width: 13));
+    } else {
+      return [];
+    }
   }
 
   void onPanStart() async => await windowManager.startDragging();
