@@ -140,8 +140,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if (widget.decorationLayout != null &&
-                                widget.decorationLayout!.leftItems.isNotEmpty)
+                            if (widget.decorationLayout != null)
                               ..._generateWindowDecorations(
                                   widget.decorationLayout!.leftItems),
                             if (widget.decorationLayout != null &&
@@ -162,8 +161,7 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
                             ...?widget.trailing,
                             if (widget.trailing?.isNotEmpty ?? false)
                               const SizedBox(width: 14),
-                            if (widget.decorationLayout != null &&
-                                widget.decorationLayout!.rightItems.isNotEmpty)
+                            if (widget.decorationLayout != null)
                               ..._generateWindowDecorations(
                                   widget.decorationLayout!.rightItems)
                           ],
@@ -180,14 +178,18 @@ class _GTKHeaderBarState extends State<GTKHeaderBar> with WindowListener {
   }
 
   List<Widget> _generateWindowDecorations(List<WindowDecoration> items) {
-    return List.generate(
-        items.length * 2 - 1,
-        (index) => (index % 2 == 0)
-            ? StandardWindowCommandButton(
-                decoration: widget.decorationLayout!.leftItems[index ~/ 2],
-                isFocused: isFocused,
-                isMaximized: isMaximized)
-            : const SizedBox(width: 14));
+    if (items.isNotEmpty) {
+      return List.generate(
+          items.length * 2 - 1,
+          (index) => (index % 2 == 0)
+              ? StandardWindowCommandButton(
+                  decoration: items[index ~/ 2],
+                  isFocused: isFocused,
+                  isMaximized: isMaximized)
+              : const SizedBox(width: 14));
+    } else {
+      return [];
+    }
   }
 
   void onPanStart() async => await windowManager.startDragging();
